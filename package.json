@@ -7,7 +7,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha test.js"
   },
   "dependencies": {
     "express": "^5.2.1"
