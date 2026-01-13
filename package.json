@@ -17,5 +17,8 @@
     "mocha": "^10.2.0",
     "chai": "^4.3.10",
     "supertest": "^6.3.3"
+  },
+  "scripts": {
+  "test": "mocha --reporter mocha-junit-reporter --reporter-options mochaFile=test-results.xml"
   }
 }
