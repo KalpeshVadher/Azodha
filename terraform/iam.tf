@@ -1,4 +1,3 @@
-# ECS TASK EXECUTION ROLE
 resource "aws_iam_role" "ecs_task_execution" {
   name = "ecs-task-execution-role"
 
@@ -17,7 +16,6 @@ resource "aws_iam_role_policy_attachment" "ecs_execution_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-# ECS TASK ROLE (APP ROLE – EMPTY BUT IMPORTANT)
 resource "aws_iam_role" "ecs_task_role" {
   name = "ecs-task-role"
 
