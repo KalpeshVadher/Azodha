@@ -6,10 +6,19 @@ resource "aws_vpc" "this" {
   enable_dns_hostnames = true
 
   tags = { Name = "simple-backend-vpc" }
+
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = [tags]
+  }
 }
 
 resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
+
+  lifecycle {
+    prevent_destroy = false
+  }
 }
 
 resource "aws_subnet" "public" {
@@ -20,6 +29,11 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = { Name = "public-subnet-${count.index}" }
+
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = [tags]
+  }
 }
 
 resource "aws_route_table" "public" {
@@ -29,10 +43,18 @@ resource "aws_route_table" "public" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.this.id
   }
+
+  lifecycle {
+    prevent_destroy = false
+  }
 }
 
 resource "aws_route_table_association" "public" {
   count          = length(aws_subnet.public)
   subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public.id
+
+  lifecycle {
+    prevent_destroy = false
+  }
 }
