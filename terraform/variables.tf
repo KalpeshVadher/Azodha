@@ -2,12 +2,15 @@ variable "aws_region" {
   default = "ap-south-1"
 }
 
-variable "vpc_id" {}
-
-variable "subnet_ids" {
-  type = list(string)
+variable "vpc_id" {
+  description = "Existing VPC ID"
 }
 
-variable "ecr_repo_url" {}
+variable "subnet_ids" {
+  description = "Public subnets for ALB & ECS"
+  type        = list(string)
+}
 
-variable "sg_id" {}
+variable "docker_image" {
+  description = "Docker image (ECR or DockerHub)"
+}
