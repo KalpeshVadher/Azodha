@@ -69,8 +69,8 @@ jobs:
         working-directory: terraform
 
       # Terraform Destroy (auto-approve)
-      - run: terraform destroy -auto-approve || echo "Destroy failed, maybe resources not exist"
-        working-directory: terraform
+      #- run: terraform destroy -auto-approve || echo "Destroy failed, maybe resources not exist"
+      #  working-directory: terraform
 
       # Terraform Apply (auto-approve)
       - run: terraform apply -auto-approve
