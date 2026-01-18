@@ -10,9 +10,9 @@ resource "aws_security_group" "alb" {
   }
 
   egress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
@@ -22,6 +22,11 @@ resource "aws_lb" "this" {
   load_balancer_type = "application"
   subnets            = aws_subnet.public[*].id
   security_groups    = [aws_security_group.alb.id]
+
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = [name]  # agar LB already exist, ignore
+  }
 }
 
 resource "aws_lb_target_group" "this" {
@@ -35,6 +40,11 @@ resource "aws_lb_target_group" "this" {
     path    = "/health"
     matcher = "200"
   }
+
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes  = [name]  # agar TG already exist, ignore
+  }
 }
 
 resource "aws_lb_listener" "http" {
@@ -45,5 +55,9 @@ resource "aws_lb_listener" "http" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.this.arn
+  }
+
+  lifecycle {
+    prevent_destroy = false
   }
 }
