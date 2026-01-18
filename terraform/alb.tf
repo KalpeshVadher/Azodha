@@ -1,4 +1,4 @@
-resource "aws_security_group" "alb_sg" {
+resource "aws_security_group" "alb" {
   name   = "alb-sg"
   vpc_id = var.vpc_id
 
@@ -17,14 +17,14 @@ resource "aws_security_group" "alb_sg" {
   }
 }
 
-resource "aws_lb" "backend" {
+resource "aws_lb" "this" {
   name               = "backend-alb"
   load_balancer_type = "application"
+  security_groups    = [aws_security_group.alb.id]
   subnets            = var.subnet_ids
-  security_groups    = [aws_security_group.alb_sg.id]
 }
 
-resource "aws_lb_target_group" "backend" {
+resource "aws_lb_target_group" "this" {
   name        = "backend-tg"
   port        = 50000
   protocol    = "HTTP"
@@ -32,17 +32,22 @@ resource "aws_lb_target_group" "backend" {
   target_type = "ip"
 
   health_check {
-    path = "/health"
+    path                = "/health"
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    interval            = 30
+    timeout             = 5
+    matcher             = "200"
   }
 }
 
 resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.backend.arn
+  load_balancer_arn = aws_lb.this.arn
   port              = 80
   protocol          = "HTTP"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.backend.arn
+    target_group_arn = aws_lb_target_group.this.arn
   }
 }
