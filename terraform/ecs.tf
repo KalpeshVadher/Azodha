@@ -1,5 +1,29 @@
+resource "aws_cloudwatch_log_group" "ecs" {
+  name              = "/ecs/simple-backend"
+  retention_in_days = 7
+}
+
 resource "aws_ecs_cluster" "this" {
   name = "simple-backend-cluster"
+}
+
+resource "aws_security_group" "ecs_sg" {
+  name   = "ecs-backend-sg"
+  vpc_id = var.vpc_id
+
+  ingress {
+    from_port       = 50000
+    to_port         = 50000
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb_sg.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 resource "aws_ecs_task_definition" "backend" {
@@ -40,12 +64,9 @@ resource "aws_ecs_service" "backend" {
   desired_count   = 2
   launch_type     = "FARGATE"
 
-  deployment_minimum_healthy_percent = 50
-  deployment_maximum_percent         = 200
-
   network_configuration {
-    subnets         = var.subnet_ids
-    security_groups = [var.sg_id]
+    subnets          = var.subnet_ids
+    security_groups  = [aws_security_group.ecs_sg.id]
     assign_public_ip = true
   }
 
